@@ -1,0 +1,113 @@
+/*fixhatterkep, x y tengelyen ismetlodik: */
+body {
+    background-image: url('images/background.jpg');
+    background-repeat: repeat;
+    background-attachment: fixed;
+  }
+  
+  /* focim (h1) es alcim (h2) szine, hatterszine es szovegdiszitese egyforma: */
+  h1, h2 {
+    color: gray;
+    background-color: aqua;
+    font-style: italic;
+  }
+  
+  /*Definialjunk (es hasznaljunk a HTML oldalon) ket kulonbozo stilusu paragrafust. Hasznaljunk
+  olyan szelektort, ami az elemtipus es az osztalyra is megkotest tesz: */
+  p.pstyle1 {
+    background-color: azure;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
+  
+  p.pstyle2 {
+    background-color: aquamarine;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  }
+  
+  /*altalanos stilusosztaly segitsegevel oldjuk meg, hogy kulonbzo HTML elemek stilusa ugyanaz legyen: */
+  .universalstyle {
+    color: brown;
+    background-color: burlywood;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-style: oblique;
+  }
+  
+  /*Adjuk meg egy sectionelemben elhelyezkedo ol elem stilusat (romai szamok, csokkeno sorrendben): */
+  section ol {
+    list-style-type: upper-roman;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  
+  /*Definialjunk ket kulonbozo link tipust, mely(ek)nek mas es mas a szine, szovegdiszitese ha ramegyunk az egrrrel, ha aktiv, ha mar meglatogattuk:*/
+  a.basiclink {
+    color: #18b332;
+    text-decoration: dotted;
+  }
+  
+  a.basiclink:hover {
+    color: #4a941f;
+    text-decoration: underline;
+  }
+  
+  a.basiclink:active {
+    color: #2b3d17;
+  }
+  
+  a.basiclink:visited {
+    color: #064b00;
+  }
+  
+  a.highlightlink {
+    color: #ff3366;
+    text-decoration: double;
+  }
+  
+  a.highlightlink:hover {
+    color: #cc0033;
+    text-decoration: wavy;
+  }
+  
+  a.highlightlink:active {
+    color: #990033;
+  }
+  
+  a.highlightlink:visited {
+    color: #993366;
+  }
+  
+  /* Definialjunk egy olyan div stilust, mely be van keretezve szimpla vonallal. A szoveg legyen a keret
+  kozeprn. A keret ket szelso resze ne latszodjon: */
+  div.bordereddiv {
+    border: 1px solid rgb(0, 11, 165);
+    border-left: transparent;
+    border-right: transparent;
+  }
+  
+  /*Definialjuk a tablazat eseten ket kulonbozo cella-stilust, melyben a szoveg igazitasa mas es mas: */
+  td.leftaligned {
+    text-align: left;
+  }
+  
+  td.rightaligned {
+    text-align: right;
+  }
+  
+  /*Flexbox segitsegevel keszitunk egy kartyas nezetet, ahol egy kartya tartalmaz egy fix meretu kepet,
+  szoveget es linket. Helyezzunk ilyen tobb kartyat egymas melle: */
+  #cardcontainer {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  @media (max-width: 900px) {
+    #cardcontainer {
+      flex-direction: column;
+    }
+  }
+  
+  /*Plusz kod, hogy a tablazat atlathatobb legyen*/
+  table, th, td {
+    border: 1px solid rgb(228, 48, 48);
+  }
+  
