@@ -3,7 +3,6 @@
 import socket
 import threading
 import os
-import select
 
 FILES_PATH = os.path.abspath(os.getcwd())
 
@@ -34,51 +33,53 @@ def get_mime_type(filename):
         return "application/octet-stream"
 
 def handle_client(client_socket):
+    print("Connection opened on " + str(threading.get_ident()) + "\n\n")
+    run = True
+    client_socket.settimeout(5.0)
 
-    #start_time = time.time()
-    request = client_socket.recv(BUFFER_SIZE).decode()
-    log_with_thread_id("Received request:\n" + request)
-    #+KEZELNI BEZARAST
-    if (not request): #or (time.time() - start_time > TIMEOUT):
-        log_with_thread_id("Connection closed\n")
-        client_socket.close()
-        return
+    while run:
+        try:            
+            request = client_socket.recv(BUFFER_SIZE).decode()
 
-    request_lines = request.split("\n")
-    request_type, file_path, _ = request_lines[0].split(" ")
+            if (len(request) == 0):
+                run = False
 
-    if request_type == "GET" and "HTTP/1.1" in request_lines[0]:
-        filename = file_path.strip("/").replace("/", "\\")
-        file_path = os.path.join(FILES_PATH, filename)
-        file_path = os.path.join(FILES_PATH, filename)
+            request_lines = request.split("\n")
+            request_type, file_path, _ = request_lines[0].split(" ")
 
-        if os.path.exists(file_path):
-            with open(file_path, "rb") as file:
-                content = file.read()
-            mime_type = get_mime_type(file_path)
-            response = f"HTTP/1.1 200 OK\nContent-Type: {mime_type}\nContent-Length: {len(content)}\nConnection: keep-alive\n\n".encode() + content
-        else:
-            response = "HTTP/1.1 404 Not Found\nContent-Length: 14\nConnection: close\n\nFile not found".encode()
+            if request_type == "GET" and "HTTP/1.1" in request_lines[0]:
+                filename = file_path.strip("/").replace("/", "\\")
+                file_path = os.path.join(FILES_PATH, filename)
+                file_path = os.path.join(FILES_PATH, filename)
 
-    client_socket.sendall(response)
+                log_with_thread_id("Received request: " + filename)
 
-    if "close" in request.lower():
-            log_with_thread_id("Connection closed\n")
-            client_socket.close()
-    
-    ready = select.select([client_socket], [], [], TIMEOUT)
-    if ready[0]:
-        return
-    else:
-        log_with_thread_id("Timeout reached: connection closed\n")
-        client_socket.close()
+                if os.path.exists(file_path):
+                    with open(file_path, "rb") as file:
+                        content = file.read()
+                    mime_type = get_mime_type(file_path)
+                    response = f"HTTP/1.1 200 OK\nContent-Type: {mime_type}\nContent-Length: {len(content)}\nConnection: keep-alive\n\n".encode() + content
+                else:
+                    response = "HTTP/1.1 404 Not Found\nContent-Length: 14\nConnection: close\n\nFile not found".encode()
+                    run = False
+
+            client_socket.sendall(response)
+
+            if "Connection: close" in request:
+                run = False
+            
+        except TimeoutError:
+            run = False
+        
+    client_socket.close()
+    print("Connection closed on " + str(threading.get_ident()) + "\n\n")
+        
 
 print(f"Server listening on {HOST}:{PORT}")
 
 try:
     while True:
         client_socket, address = server_socket.accept()
-        print(f"Accepted connection from {address[0]}:{address[1]}\n\n")
         client_handler = threading.Thread(target=handle_client, args=(client_socket,))
         client_handler.start()
 except KeyboardInterrupt:
